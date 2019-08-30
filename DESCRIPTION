@@ -1,0 +1,14 @@
+Package: boldminer
+Type: Package
+Title: Wrapper for BOLD API and DNA barcode auditing
+Version: 0.1.0
+Author: Ulises Rosas-Puchuri
+Maintainer: Ulises Rosas-Puchuri <ulisesfrosasp@gmail.com>
+Description: boldminer allows to mine metadata from BOLD database
+    by using its API service and presents this up for downstream 
+    procedures. Furthermore, boldminer also make quick assessment of 
+    quality of species barcodes.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
