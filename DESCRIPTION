@@ -8,7 +8,7 @@ Description: boldminer allows to mine metadata from BOLD database
     by using its API service and presents this up for downstream 
     procedures. Furthermore, boldminer also make quick assessment of 
     quality of species barcodes.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
