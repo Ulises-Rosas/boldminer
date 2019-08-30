@@ -16,13 +16,13 @@ SpecimenData(taxon, ids, bin, container, institutions, researchers, geo,
 
 \item{container}{container name. e.g. FIPP}
 
+\item{institutions}{institution names. e.g. Smithsonian Institution}
+
+\item{researchers}{names of identifiers or specimen collectors}
+
 \item{geo}{name of geographical area to look for.}
 
 \item{...}{others query name or column name that can be present in metadata}
-
-\item{institution}{institution names. e.g. Smithsonian Institution}
-
-\item{reseachers}{names of identifiers or specimen collectors}
 }
 \value{
 metadata information

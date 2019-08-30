@@ -11,14 +11,16 @@
 #' @param ids IDs from specimen records. e.g. ANGBF12704-15
 #' @param bin barcode-based cluster ID. e.g. BOLD:AAA4689
 #' @param container container name. e.g. FIPP
-#' @param institution institution names. e.g. Smithsonian Institution
-#' @param reseachers names of identifiers or specimen collectors
+#' @param institutions institution names. e.g. Smithsonian Institution
+#' @param researchers names of identifiers or specimen collectors
 #' @param geo name of geographical area to look for.
 #' @param ... others query name or column name that can be present in metadata
 #'
 #' @return metadata information
 #' @export
-#'
+#' @import ape
+#' @import data.table
+#' @import RCurl
 
 
 # library(ape)

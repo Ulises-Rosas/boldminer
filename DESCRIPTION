@@ -12,3 +12,13 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
+URL: https://github.com/Ulises-Rosas/boldminer
+BugReports: https://github.com/Ulises-Rosas/boldminer/issues
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Imports: 
+    ape,
+    data.table,
+    RCurl
