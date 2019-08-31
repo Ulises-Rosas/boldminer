@@ -35,3 +35,7 @@ use them as headers for BOLD API host
 for downloading metadata. More than one query
 can be specified by using "|".
 }
+\examples{
+specimendata <- SpecimenData(taxon = "Elasmobranchii", geo = "Peru")
+head(specimendata)
+}

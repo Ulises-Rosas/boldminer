@@ -21,4 +21,7 @@ VignetteBuilder: knitr
 Imports: 
     ape,
     data.table,
-    RCurl
+    RCurl,
+    dplyr,
+    reticulate,
+    XML
