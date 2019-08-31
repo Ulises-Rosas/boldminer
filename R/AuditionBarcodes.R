@@ -46,7 +46,7 @@ AuditionBarcodes<- function(species,
       unicodedata <<- reticulate::import("unicodedata", delay_load = TRUE)
     }
 
-    reticulate::source_python("inst/Python/worms.py", convert = F)
+    reticulate::source_python("inst/worms.py", convert = F)
 
     getSpps <- function(sppsvec){
 
