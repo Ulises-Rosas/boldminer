@@ -67,7 +67,7 @@ boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru", seq = "only")
 
 ### ID_engine
 
-**ID_engine** finds best matches between a query sequence and a database of BOLD by using BLASTn-based algorithms. Arguments of this function are `query` and `db`. The first one are query sequences and the second one are one of avilable databases in BOLD:
+This function finds best matches between a query sequence and a database of BOLD by using BLASTn-based algorithms. Arguments of this function are `query` and `db`. The first one are query sequences and the second one are one of avilable databases in BOLD:
 
 * `COX1`
 * `COX1_SPECIES`
@@ -114,13 +114,8 @@ boldminer::lookID(id_out)
 
 This function adds an **audition** step ([Oliveira _et al._ 2016](https://onlinelibrary.wiley.com/doi/full/10.1111/jfb.13169)) to each selected specimen by `ID_engine()` (see above), given a certain threshold. This function, in turn, uses another function called `AuditionBarcodes()` (see below). This prior function is coupled with `auditOnID()` and can validate species names by taking accepted names from [Worms database](http://www.marinespecies.org/).
 
-As seen with `ID_engine()`, this function starts with a fasta-formated file. We can take sample file within the package by running this:
-
-```{r}
-fasta_file <- system.file("sequences.fa", package = "boldminer") 
-```
-
-Then, we can identify those sequences under `audiOnID()` functionality by using a `threshold = 0.99` (i.e. 99% of similarity):
+As seen with `ID_engine()`, this function starts with a fasta-formated file. We can take the same sample file we used: `fasta_file`. Then, we can identify those sequences under `audiOnID()` functionality by using a `threshold = 0.99` (i.e. 99% 
+of similarity):
 
 ```{r eval=FALSE}
 aoID_out <- boldminer::auditOnID(seqs = fasta_file, threshold = 0.99)
