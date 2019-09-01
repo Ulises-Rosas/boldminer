@@ -4,6 +4,7 @@ BOLDmineR
 =========
 
 <!-- badges: start -->
+[![DOI](https://zenodo.org/badge/205451668.svg)](https://zenodo.org/badge/latestdoi/205451668)
 <!-- badges: end -->
 DNA barcodes are not only used by researchers, but also by decision-makers (e.g. to control food fraud or illegal species commercialization). The big-scale demand of both online services and information to identify species contrasts with the limited ways to automatize either species identification or assessment of barcode quality per species, directly from the web interface.
 
