@@ -146,7 +146,7 @@ AuditionBarcodes<- function(species,
     if(g == "A"){
 
       if( is.null(m) ){
-        "Matched BIN with internal congruence only" ->  obs
+        "Matched BIN with external congruence" ->  obs
         json_f(b) -> bin_str
 
       }else{
@@ -251,9 +251,13 @@ AuditionBarcodes<- function(species,
     spedat = SpecimenData(taxon = x)
 
     if( is.null(spedat) ){
-
-      writeLines( paste0("No specimen data for ", x) )
-      NULL
+      # writeLines( paste0("No specimen data for ", x) )
+      data.frame(
+        Species= x,
+        Grades = "NA",
+        Observations = "No specimen data available",
+        BIN_structure = NA,
+        stringsAsFactors = F)
 
     }else{
       spedat[,
@@ -401,13 +405,3 @@ AuditionBarcodes<- function(species,
   })
   return(do.call('rbind', frames))
 }
-
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-# if(getRversion() >= "2.15.1"){
-#
-#   globVars <- c(".", "processid", "bin_uri", "species_name",
-#                 "institution_storing", "species_taxID", ".N")
-#
-#   utils::globalVariables(globVars)
-# }
-
