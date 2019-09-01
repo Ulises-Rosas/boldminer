@@ -33,3 +33,11 @@ of avilable databases in BOLD:
 
 - `COX1_L640bp`
 }
+\examples{
+\dontrun{
+fasta_file <- system.file("sequences.fa", package = "boldminer")
+out <- boldminer::ID_engine(query = fasta_file, db = "COX1_SPECIES")
+
+}
+
+}

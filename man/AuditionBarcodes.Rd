@@ -8,13 +8,14 @@ AuditionBarcodes(species, matches = NULL, validate_name = FALSE,
   exclude_ncbi = TRUE, quiet = FALSE)
 }
 \arguments{
-\item{species}{species}
+\item{species}{species name vector}
 
-\item{matches}{matches}
+\item{matches}{This is only filled when this function is coupled with \code{\link{auditOnID}} function}
 
-\item{validate_name}{validate_name}
+\item{validate_name}{if TRUE, validation of species name is performed. This validation of name is performed
+by using taxamatch algorithm from \href{WoRMS Rest API}{http://www.marinespecies.org/aphia.php?p=webservice}}
 
-\item{exclude_ncbi}{exclude barcodes obtained from NCBI}
+\item{exclude_ncbi}{exclude barcodes obtained from \href{NCBI database}{https://www.ncbi.nlm.nih.gov}}
 
 \item{quiet}{let to use running messages while auditing}
 }
@@ -23,17 +24,14 @@ DNA barcode auditing
 }
 \description{
 Despite AuditionBarcodes function is coupled with \code{\link{auditOnID}} function,
-it can also work with just a list of names. Furthermore, there is an argument
-which enables to chose if sequences from GenBank are considered.
-It is pending, however, assess whether these sequences used to assess barcode's quality
-come from either a published article or direct submission.
-Please notice that grades are obtained with accepted names of
-species according to WoRMS database by
-using the worms.py script.
-Hence, since currently accepted names within `species` vector has not been
+it can also work with just a list of names.
+It is pending, when using records mined from
+\href{NCBI database}{https://www.ncbi.nlm.nih.gov}, assess whether these
+sequences used to assess barcode's quality come from either a published article or direct submission.
+Please notice that grades are obtained with accepted names of species according to
+\href{WoRMS Rest API}{http://www.marinespecies.org/aphia.php?p=webservice} by using
+its taxamatch algorithm. Hence, since currently accepted names within `species` vector has not been
 figured out, unevenness between the column `BIN_structure` and `species` could pop up.
-For this reason, on above example, _Morula margariticola_ has another name into BIN structure
-column (i.e. _Drupella margariticola_) which actually is its currently accepted name.
 }
 \examples{
 \dontrun{

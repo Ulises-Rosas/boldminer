@@ -21,24 +21,38 @@
 #' @importFrom utils tail head
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' fasta_file <- system.file("sequences.fa", package = "boldminer")
+#' out <- boldminer::ID_engine(query = fasta_file, db = "COX1_SPECIES")
 #'
-ID_engine<- function(query, db, make_blast = TRUE, ...){
+#' }
+#'
+ID_engine <- function(query, db, make_blast = TRUE, ...){
+
+  # db    = "COX1_SPECIES"
+  # query = fasta_file
 
   if( !length( attributes(query) ) )
     query = ape::read.FASTA(query)
 
-  # db    = "COX1_SPECIES"
+  lapply(
+    query,
+    function(x){
+      paste(
+        ape::as.character.DNAbin(x),
+        collapse = "")
+      }
+    ) -> seqs
 
-  seqs <- lapply(query, function(x){
-    paste(ape::as.character.DNAbin(x), collapse = "")
-    })
-
+  # seqs = seqs[1]
   lapply(names(seqs), function(y){
 
     x = seqs[[y]]
 
-    data <- XML::xmlParse( paste("http://www.boldsystems.org/index.php/Ids_xml?db=",
-                            db, "&sequence=", x, sep = ""))
+    data <- XML::xmlParse(
+      paste0("http://www.boldsystems.org/index.php/Ids_xml?db=",
+             db,"&sequence=", x))
 
     bold.results = XML::xmlToDataFrame(data, stringsAsFactors = FALSE)
 
@@ -108,10 +122,67 @@ ID_engine<- function(query, db, make_blast = TRUE, ...){
         )
 
     }else{
+
       return(bold.results)
-      }
-  })
+    }
+  }) -> ids
+
+  names(ids) <- names(seqs)
+
+  return(ids)
 }
+
+#' lookID
+#'
+#' Take first and last rows from \code{\link{ID_engine}} function results
+#'
+#' @param out list of results from \code{\link{ID_engine}} function
+#' @param first number of first rows from input
+#' @param last number of last rows from input
+#'
+#' @return data frame with constrained results
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' boldminer::lookID(out)
+#' }
+#'
+lookID <- function(out, first = 5, last = 0){
+
+  lapply(
+    names(out),
+    function(x){
+
+      tmpdf = out[[x]]
+
+      if(ncol(tmpdf) > 3)
+        tmpdf <- tmpdf[, c(1,5,6)]
+
+      df = data.frame()
+
+      if(first)
+        df = rbind(df, head(tmpdf, first))
+
+      if(last)
+        df = rbind(df, tail(tmpdf, last))
+
+      if(nrow(df)){
+
+        df <- data.frame(Sample = x, df, stringsAsFactors = FALSE)
+        return(df)
+
+      }else{
+
+        return(NULL)
+      }
+    }
+  ) -> fmtDf
+
+  return( do.call("rbind", fmtDf) )
+}
+
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))

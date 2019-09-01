@@ -2,20 +2,21 @@
 #'
 #'
 #' This function adds an audition step
-#' (Oliveira et al 2016, doi: 10.1111/jfb.13169)
+#' (\href{Oliveira et al 2016}{doi: 10.1111/jfb.13169})
 #' to each selected specimen by \code{\link{ID_engine}}, given a certain threshold.
-#' This function, in turn, uses another function called `AuditionBarcodes()`.
+#' This function, in turn, uses another function called \code{\link{AuditionBarcodes}}.
 #' This prior function is coupled with addAudition and can validate species names by
-#' taking accepted names from Worms database.
-#'
+#' taking accepted names from \href{Worms database}{http://www.marinespecies.org/index.php}.
 #'
 #'
 #' @param seqs sequence file
-#' @param threshold threshold
+#' @param threshold minimal similarity proportion allowed between sample and specimen matches
 #' @param exclude_ncbi exclude barcodes obtained from NCBI when DNA barcode auditing is allowed, i.e. not just_ID
-#' @param just_ID just_ID
-#' @param make_blast make_blast
-#' @param validate_name validate_name
+#' @param just_ID if TRUE, audition step is skipped
+#' @param make_blast if TRUE, blastn algorithm is run for matching sequences
+#' @param validate_name if TRUE, validation of species name is performed. This validation of name is performed
+#'     by using taxamatch algorithm from \href{WoRMS Rest API}{http://www.marinespecies.org/aphia.php?p=webservice}
+#'
 #'
 #' @return species ID plus DNA barcode auditing
 #' @export
@@ -29,7 +30,7 @@
 #' }
 auditOnID <- function(seqs,
                       threshold = 0.99,
-                      exlclude_ncbi=TRUE,
+                      exclude_ncbi=TRUE,
                       just_ID = FALSE,
                       make_blast = FALSE ,
                       validate_name = FALSE
