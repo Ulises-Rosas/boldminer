@@ -1,6 +1,6 @@
 #' AuditionBarcodes
 #'
-#' Despite AuditionBarcodes function is coupled with \code{\link{addAudition}} function,
+#' Despite AuditionBarcodes function is coupled with \code{\link{auditOnID}} function,
 #' it can also work with just a list of names. Furthermore, there is an argument
 #' which enables to chose if sequences from GenBank are considered.
 #' It is pending, however, assess whether these sequences used to assess barcode's quality
@@ -219,9 +219,9 @@ AuditionBarcodes <- function(species,
 
     if(is.null(m))
       df = cbind(
-        data.frame(Species = y),
+        data.frame(Species = y, stringsAsFactors = FALSE),
         df,
-        data.frame(BIN_structure = bin_str)
+        data.frame(BIN_structure = bin_str, stringsAsFactors = FALSE)
         )
 
     return(df)
@@ -334,18 +334,11 @@ AuditionBarcodes <- function(species,
 
         uniqSpps  = unique(bin$species_name)
         lengthIns = length(unique(bin$institution_storing))
-        # bin = bin %>%
-        #   dplyr::group_by( species_name, bin_uri) %>%
-        #   dplyr::summarise(institutes = length(unique(institution_storing)),
-        #                             n = length(species_name))
+
         bin[,
           list(institutes = length( unique( .SD$institution_storing ) ), n = .N),
           by = list(species_name, bin_uri)
           ] -> bin
-        # bin[,
-        #     list(institutes = length( unique( institution_storing ) ), n = .N ),
-        #     by = list("species_name", "bin_uri")
-        #   ] -> bin
 
         if( length(uniqBins) > 1 ){
 

@@ -22,7 +22,5 @@ Imports:
     ape,
     data.table,
     RCurl,
-    dplyr,
-    reticulate,
     XML,
     magrittr

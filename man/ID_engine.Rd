@@ -4,7 +4,7 @@
 \alias{ID_engine}
 \title{ID_engine}
 \usage{
-ID_engine(query, db, make_blast = T, ...)
+ID_engine(query, db, make_blast = TRUE, ...)
 }
 \arguments{
 \item{query}{query}

@@ -22,7 +22,7 @@ AuditionBarcodes(species, matches = NULL, validate_name = FALSE,
 DNA barcode auditing
 }
 \description{
-Despite AuditionBarcodes function is coupled with \code{\link{addAudition}} function,
+Despite AuditionBarcodes function is coupled with \code{\link{auditOnID}} function,
 it can also work with just a list of names. Furthermore, there is an argument
 which enables to chose if sequences from GenBank are considered.
 It is pending, however, assess whether these sequences used to assess barcode's quality

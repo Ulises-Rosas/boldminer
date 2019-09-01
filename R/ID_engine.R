@@ -22,9 +22,11 @@
 #' @export
 #'
 #'
-ID_engine<- function(query, db, make_blast = T, ...){
+ID_engine<- function(query, db, make_blast = TRUE, ...){
 
-  query = ape::read.FASTA(query)
+  if( !length( attributes(query) ) )
+    query = ape::read.FASTA(query)
+
   # db    = "COX1_SPECIES"
 
   seqs <- lapply(query, function(x){
@@ -38,7 +40,7 @@ ID_engine<- function(query, db, make_blast = T, ...){
     data <- XML::xmlParse( paste("http://www.boldsystems.org/index.php/Ids_xml?db=",
                             db, "&sequence=", x, sep = ""))
 
-    bold.results = XML::xmlToDataFrame(data)
+    bold.results = XML::xmlToDataFrame(data, stringsAsFactors = FALSE)
 
     if( nrow(bold.results) == 0 && make_blast ){
 
@@ -51,8 +53,10 @@ ID_engine<- function(query, db, make_blast = T, ...){
       if(rid == "")
         return(
           data.frame(ID = "GenBank: RID not available",
-                          taxonomicidentification = "RID not available.",
-                          similarity = 0))
+                     taxonomicidentification = "RID not available.",
+                     similarity = 0,
+                     stringsAsFactors = FALSE)
+          )
 
       hits = list()
 
@@ -87,16 +91,21 @@ ID_engine<- function(query, db, make_blast = T, ...){
                         as.numeric(.) / gsub(".*<Hsp_align-len>", "", e) %>%
                         gsub("</Hsp_align-len>.*", "", x =.) %>%
                         as.numeric(.) ,
-                      digits = 4)
+                      digits = 4),
+
+                    stringsAsFactors = FALSE
                     )
         })
 
       return(do.call("rbind", genbank.results))
 
     }else if(  nrow(bold.results) == 0 && !make_blast ){
-      return(data.frame(ID = y,
-                        taxonomicidentification = "Unavailable with BOLD",
-                        similarity = 0))
+      return(
+        data.frame(ID = y,
+                   taxonomicidentification = "Unavailable with BOLD",
+                   similarity = 0,
+                   stringsAsFactors = FALSE)
+        )
 
     }else{
       return(bold.results)

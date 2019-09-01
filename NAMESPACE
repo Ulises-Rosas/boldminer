@@ -3,7 +3,7 @@
 export(AuditionBarcodes)
 export(ID_engine)
 export(SpecimenData)
-export(addAudition)
+export(auditOnID)
 importFrom(data.table,.N)
 importFrom(data.table,.SD)
 importFrom(magrittr,"%>%")
