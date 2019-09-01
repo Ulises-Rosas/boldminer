@@ -5,7 +5,7 @@
 \title{AuditionBarcodes}
 \usage{
 AuditionBarcodes(species, matches = NULL, validate_name = FALSE,
-  include_ncbi = FALSE, python_path = "/usr/local/bin/python3")
+  exclude_ncbi = TRUE, quiet = FALSE)
 }
 \arguments{
 \item{species}{species}
@@ -14,9 +14,9 @@ AuditionBarcodes(species, matches = NULL, validate_name = FALSE,
 
 \item{validate_name}{validate_name}
 
-\item{include_ncbi}{include_ncbi}
+\item{exclude_ncbi}{exclude barcodes obtained from NCBI}
 
-\item{python_path}{python_path}
+\item{quiet}{let to use running messages while auditing}
 }
 \value{
 DNA barcode auditing
@@ -38,6 +38,6 @@ column (i.e. _Drupella margariticola_) which actually is its currently accepted 
 \examples{
 \dontrun{
 species <- c( "Caranx ruber", "Bathygobius lineatus", "Diodon hystrix")
-boldminer::AuditionBarcodes(species, include_ncbi = FALSE, validate_name = TRUE)
+boldminer::AuditionBarcodes(species, exclude_ncbi = FALSE, validate_name = TRUE)
 }
 }

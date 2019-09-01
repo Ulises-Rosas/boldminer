@@ -4,24 +4,21 @@
 \alias{addAudition}
 \title{addAudition}
 \usage{
-addAudition(seqs, threshold, include_ncbi = F, just_ID = F,
-  make_blast = F, python_path = "/usr/local/bin/python3",
-  validate_name = F)
+addAudition(seqs, threshold, exlclude_ncbi = TRUE, just_ID = FALSE,
+  make_blast = FALSE, validate_name = FALSE)
 }
 \arguments{
 \item{seqs}{sequence file}
 
 \item{threshold}{threshold}
 
-\item{include_ncbi}{include_ncbi}
-
 \item{just_ID}{just_ID}
 
 \item{make_blast}{make_blast}
 
-\item{python_path}{python_path}
-
 \item{validate_name}{validate_name}
+
+\item{exclude_ncbi}{exclude barcodes obtained from NCBI when DNA barcode auditing is allowed, i.e. not just_ID}
 }
 \value{
 species ID plus DNA barcode auditing

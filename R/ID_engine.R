@@ -17,7 +17,7 @@
 #' @param ... amazing three points
 #'
 #' @return species ID
-#' @importFrom dplyr %>% .data
+#' @importFrom magrittr %>%
 #' @importFrom utils tail head
 #' @export
 #'

@@ -17,8 +17,8 @@
 #' @param species species
 #' @param matches matches
 #' @param validate_name validate_name
-#' @param include_ncbi include_ncbi
-#' @param python_path python_path
+#' @param exclude_ncbi exclude barcodes obtained from NCBI
+#' @param quiet let to use running messages while auditing
 #'
 #' @return DNA barcode auditing
 #' @export
@@ -26,43 +26,28 @@
 #' @examples
 #' \dontrun{
 #' species <- c( "Caranx ruber", "Bathygobius lineatus", "Diodon hystrix")
-#' boldminer::AuditionBarcodes(species, include_ncbi = FALSE, validate_name = TRUE)
+#' boldminer::AuditionBarcodes(species, exclude_ncbi = FALSE, validate_name = TRUE)
 #' }
 
 
-AuditionBarcodes<- function(species,
+AuditionBarcodes <- function(species,
                             matches = NULL,
                             validate_name = FALSE,
-                            include_ncbi = FALSE,
-                            python_path = "/usr/local/bin/python3"){ ##function for only using with public data
-
+                            exclude_ncbi = TRUE,
+                            quiet = FALSE){ ##function for only using with public data
   ## for testing
   # species = "Bathygobius lineatus"
   ## for testing
+
+  if(!quiet){
+    writeLines( "Auditing for:\n" )
+    fmt <- getfmt(species)
+  }
 
   pat = "^[A-Z][a-z]+ [a-z]+$"
   pat2 = "^[A-Z][a-z]+ sp[p|\\.]{0,2}$"
 
   if(validate_name){
-
-    Sys.setenv(RETICULATE_PYTHON = python_path)
-
-    reticulate::use_python(python = python_path)
-
-    urllib <- NULL
-    time <- NULL
-    unicodedata <- NULL
-
-    .onLoad <- function(libname, pkgname) {
-      # use superassignment to update global reference to scipy
-      urllib      <<- reticulate::import("urllib", delay_load = TRUE)
-      time        <<- reticulate::import("time", delay_load = TRUE)
-      unicodedata <<- reticulate::import("unicodedata", delay_load = TRUE)
-    }
-
-    wpath <- system.file(package = "boldminer")
-
-    reticulate::source_python(paste0(wpath, "/worms.py"), convert = F)
 
     getSpps <- function(sppsvec){
 
@@ -71,7 +56,8 @@ AuditionBarcodes<- function(species,
           # tmp = as.character(.GlobalEnv$Worms(x)$get_accepted_name())
           # if(!grepl(pat, tmp) || grepl(pat2, tmp))
             # tmp = as.character(.GlobalEnv$Worms(x)$taxamatch())
-          tmp = as.character(Worms(x)$taxamatch())
+          # tmp = as.character(Worms(x)$taxamatch())
+          tmp = taxamatch(x)
 
           if(!grepl(pat, tmp) || grepl(pat2, tmp))
             tmp = x
@@ -243,10 +229,14 @@ AuditionBarcodes<- function(species,
 
 
   frames = lapply(species, function(x){
-
     ## for testing
     # x = species
+    # x = "Caranx ruber"
     ## for testing
+
+    if(!quiet)
+      writeLines(sprintf(fmt, x))
+
 
     spedat = SpecimenData(taxon = x)
 
@@ -275,7 +265,7 @@ AuditionBarcodes<- function(species,
           !grepl("*unvouchered", mbb0$institution_storing)
         ] -> meta.by.barcodes1
 
-      if(include_ncbi){
+      if(exclude_ncbi){
 
         meta.by.barcodes1[
           !grepl("Mined from GenBank, NCBI", meta.by.barcodes1$institution_storing)
@@ -299,7 +289,7 @@ AuditionBarcodes<- function(species,
 
                   function(x){
 
-                    if(include_ncbi){
+                    if(!exclude_ncbi){
                       tmp = x[!grepl("*unvouchered", x[1])]
 
                     }else{
@@ -335,7 +325,7 @@ AuditionBarcodes<- function(species,
           ] -> bin
 
 
-        if(include_ncbi){
+        if(exclude_ncbi){
 
           bin[
             !grepl("Mined from GenBank, NCBI", bin$institution_storing)

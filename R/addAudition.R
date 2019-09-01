@@ -12,10 +12,9 @@
 #'
 #' @param seqs sequence file
 #' @param threshold threshold
-#' @param include_ncbi include_ncbi
+#' @param exclude_ncbi exclude barcodes obtained from NCBI when DNA barcode auditing is allowed, i.e. not just_ID
 #' @param just_ID just_ID
 #' @param make_blast make_blast
-#' @param python_path python_path
 #' @param validate_name validate_name
 #'
 #' @return species ID plus DNA barcode auditing
@@ -24,11 +23,10 @@
 #'
 addAudition <- function(seqs,
                         threshold,
-                        include_ncbi=F,
-                        just_ID = F,
-                        make_blast = F ,
-                        python_path = "/usr/local/bin/python3",
-                        validate_name = F
+                        exlclude_ncbi=TRUE,
+                        just_ID = FALSE,
+                        make_blast = FALSE ,
+                        validate_name = FALSE
                         ){
 
 
@@ -118,9 +116,9 @@ addAudition <- function(seqs,
                        paste(
                          AuditionBarcodes(species = names(barcodes),
                                           matches = sum(barcodes),
-                                          include_ncbi  = include_ncbi,
+                                          exclude_ncbi  = exclude_ncbi,
                                           validate_name = validate_name,
-                                          python_path   = python_path)$Grades,
+                                          quiet = TRUE)$Grades,
                          collapse = ", "),
                        " respectively.",sep = ""),
                      Observations = "") -> lista2[[i]]
@@ -135,9 +133,9 @@ addAudition <- function(seqs,
                        Species = paste(names(barcodes)),
                        AuditionBarcodes(species = names(barcodes),
                                         matches = sum(barcodes),
-                                        include_ncbi  = include_ncbi,
+                                        exclude_ncbi  = exclude_ncbi,
                                         validate_name = validate_name,
-                                        python_path   = python_path)) -> lista2[[i]]
+                                        quiet = TRUE)) -> lista2[[i]]
           }else{
 
             data.frame(Match   = "Unique",
