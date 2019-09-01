@@ -22,12 +22,26 @@
 #'
 #' @return DNA barcode auditing
 #' @export
+#' @importFrom data.table .SD .N
+#' @examples
+#' \dontrun{
+#' species <- c( "Caranx ruber", "Bathygobius lineatus", "Diodon hystrix")
+#' boldminer::AuditionBarcodes(species, include_ncbi = FALSE, validate_name = TRUE)
+#' }
+
 
 AuditionBarcodes<- function(species,
                             matches = NULL,
-                            validate_name = F,
-                            include_ncbi = F,
+                            validate_name = FALSE,
+                            include_ncbi = FALSE,
                             python_path = "/usr/local/bin/python3"){ ##function for only using with public data
+
+  ## for testing
+  # species = "Bathygobius lineatus"
+  ## for testing
+
+  pat = "^[A-Z][a-z]+ [a-z]+$"
+  pat2 = "^[A-Z][a-z]+ sp[p|\\.]{0,2}$"
 
   if(validate_name){
 
@@ -46,19 +60,21 @@ AuditionBarcodes<- function(species,
       unicodedata <<- reticulate::import("unicodedata", delay_load = TRUE)
     }
 
-    reticulate::source_python("inst/worms.py", convert = F)
+    wpath <- system.file(package = "boldminer")
+
+    reticulate::source_python(paste0(wpath, "/worms.py"), convert = F)
 
     getSpps <- function(sppsvec){
 
-      pat = "^[A-Z][a-z]+ [a-z]+$"
-      pat2 = "^[A-Z][a-z]+ sp[p|\\.]{0,2}$"
-
       unlist(
-        lapply(sppsvec, function(x){
-          tmp = as.character(.GlobalEnv$Worms(x)$get_accepted_name())
+        lapply( as.character(sppsvec), function(x){
+          # tmp = as.character(.GlobalEnv$Worms(x)$get_accepted_name())
+          # if(!grepl(pat, tmp) || grepl(pat2, tmp))
+            # tmp = as.character(.GlobalEnv$Worms(x)$taxamatch())
+          tmp = as.character(Worms(x)$taxamatch())
 
           if(!grepl(pat, tmp) || grepl(pat2, tmp))
-            tmp = as.character(.GlobalEnv$Worms(x)$taxamatch())
+            tmp = x
 
           tmp
         })
@@ -74,7 +90,7 @@ AuditionBarcodes<- function(species,
       names(a) = uniqSpps
 
       sapply(
-        bin$species_name,
+        as.character(bin$species_name),
         function(x){
           a[names(a) == x]
         }
@@ -225,128 +241,159 @@ AuditionBarcodes<- function(species,
     return(df)
   }
 
+
   frames = lapply(species, function(x){
 
-    meta.by.barcodes0 = SpecimenData(taxon = x) %>%
-      dplyr::select(processid,
-                    bin_uri,
-                    species_name,
-                    institution_storing,
-                    species_taxID)
+    ## for testing
+    # x = species
+    ## for testing
 
-    taxid = unique(meta.by.barcodes0$species_taxID)[1]
+    spedat = SpecimenData(taxon = x)
 
-    meta.by.barcodes1 = meta.by.barcodes0%>%
-      dplyr::mutate_if(is.factor, as.character) %>%
-      dplyr::filter(grepl("BOLD", bin_uri),
-                    !grepl("*unvouchered", institution_storing))
+    if( is.null(spedat) ){
 
-    if(include_ncbi){
-      meta.by.barcodes1 = meta.by.barcodes1 %>%
-        dplyr::filter(!grepl("Mined from GenBank, NCBI", institution_storing))
-    }
-
-    if( nrow(meta.by.barcodes1) <= 3){
-
-      gsub('\"',"",
-        gsub(
-          '.*depositry":\\{(.+?)\\},.*', '\\1',
-          RCurl::getURL(
-            paste0(
-              "http://www.boldsystems.org/index.php/API_Tax/TaxonData?taxId=",
-              taxid ,"&dataTypes=all" )))) -> js00
-
-      do.call("rbind",
-              lapply(
-                strsplit(
-                  strsplit( js00, split = ",")[[1]], split = "\\:"),
-
-                function(x){
-
-                  if(include_ncbi){
-                    tmp = x[!grepl("*unvouchered", x[1])]
-
-                  }else{
-                    tmp = x[!grepl("Mined from GenBank", x[1]) &
-                              !grepl(" NCBI", x[1]) &
-                              !grepl("*unvouchered", x[1])] }
-
-                  if( !is.na(tmp[2]) )
-                    data.frame(institutions = tmp[1],
-                               records = as.numeric(tmp[2]),
-                               stringsAsFactors = F)
-                })
-              ) -> js0
-
-      if( sum(js0$records, na.rm = T) > 0){
-
-        classFrame(m = matches, g = "D", j = js0, y = x)
-      }else{
-
-        classFrame(m = matches, g = "F", y = x)
-      }
+      writeLines( paste0("No specimen data for ", x) )
+      NULL
 
     }else{
+      spedat[,
+        list(processid,
+             bin_uri,
+             species_name,
+             institution_storing,
+             species_taxID)
+        ] -> mbb0
 
-      uniqBins = unique(meta.by.barcodes1$bin_uri)
-      bin = SpecimenData(bin = paste(uniqBins, collapse = "|")) %>%
-        dplyr::filter(grepl("[A-Z][a-z]+ [a-z]+$",species_name),
-                      !grepl("[A-Z][a-z]+ sp[p|.]{0,2}$", species_name),
-                      !grepl("*unvouchered", institution_storing))
+      taxid = unique(mbb0$species_taxID)[1]
+
+      mbb0[
+        grepl("BOLD", x = mbb0$bin_uri )  &
+          !grepl("*unvouchered", mbb0$institution_storing)
+        ] -> meta.by.barcodes1
 
       if(include_ncbi){
-        bin = bin %>%
-          dplyr::filter(!grepl("Mined from GenBank, NCBI", institution_storing))
+
+        meta.by.barcodes1[
+          !grepl("Mined from GenBank, NCBI", meta.by.barcodes1$institution_storing)
+          ] ->  meta.by.barcodes1
       }
 
-      uniqSpps  = unique(bin$species_name)
-      lengthIns = length(unique(bin$institution_storing))
+      if( nrow(meta.by.barcodes1) <= 3){
 
-      bin = bin %>%
-        dplyr::group_by( species_name, bin_uri) %>%
-        dplyr::summarise(institutes = length(unique(institution_storing)),
-                                  n = length(species_name))
+        gsub('\"',"",
+             gsub(
+               '.*depositry":\\{(.+?)\\},.*', '\\1',
+               RCurl::getURL(
+                 paste0(
+                   "http://www.boldsystems.org/index.php/API_Tax/TaxonData?taxId=",
+                   taxid ,"&dataTypes=all" )))) -> js00
 
-      if( length(uniqBins) > 1 ){
+        do.call("rbind",
+                lapply(
+                  strsplit(
+                    strsplit( js00, split = ",")[[1]], split = "\\:"),
 
-        if( length(uniqSpps) > 1 ){
+                  function(x){
 
-          if(validate_name)
-            bin = renameWithValidate(bin)
+                    if(include_ncbi){
+                      tmp = x[!grepl("*unvouchered", x[1])]
 
-          classFrame(
-            m = matches,
-            g = ifelse(length(unique(bin$species_name)) == 1, 'C', 'E**'),
-            b = bin,
-            y = x)
+                    }else{
+                      tmp = x[!grepl("Mined from GenBank", x[1]) &
+                                !grepl(" NCBI", x[1]) &
+                                !grepl("*unvouchered", x[1])] }
 
+                    if( !is.na(tmp[2]) )
+                      data.frame(institutions = tmp[1],
+                                 records = as.numeric(tmp[2]),
+                                 stringsAsFactors = F)
+                  })
+        ) -> js0
+
+        if( sum(js0$records, na.rm = T) > 0){
+
+          classFrame(m = matches, g = "D", j = js0, y = x)
         }else{
-            classFrame(m = matches, g = 'C', b = bin, y = x)
+
+          classFrame(m = matches, g = "F", y = x)
         }
 
       }else{
 
-        if( length(uniqSpps) == 1 && lengthIns > 1){
-          classFrame(m = matches, g= 'A', b = bin, y = x )
+        uniqBins = unique(meta.by.barcodes1$bin_uri)
 
-        }else if( length(uniqSpps) == 1 && lengthIns == 1 ){
-          classFrame(m = matches, g= 'B', b = bin, y = x )
+        spb = SpecimenData(bin = paste(uniqBins, collapse = "|"))
 
-        }else{
+        spb[
+          grepl(pat,spb$species_name) &
+            !grepl(pat2, spb$species_name) &
+            !grepl("*unvouchered", spb$institution_storing)
+          ] -> bin
 
-          if(validate_name)
-            bin = renameWithValidate(bin)
 
-          if( length(unique(bin$species_name)) == 1){
+        if(include_ncbi){
+
+          bin[
+            !grepl("Mined from GenBank, NCBI", bin$institution_storing)
+            ] -> bin
+        }
+
+        uniqSpps  = unique(bin$species_name)
+        lengthIns = length(unique(bin$institution_storing))
+        # bin = bin %>%
+        #   dplyr::group_by( species_name, bin_uri) %>%
+        #   dplyr::summarise(institutes = length(unique(institution_storing)),
+        #                             n = length(species_name))
+        bin[,
+          list(institutes = length( unique( .SD$institution_storing ) ), n = .N),
+          by = list(species_name, bin_uri)
+          ] -> bin
+        # bin[,
+        #     list(institutes = length( unique( institution_storing ) ), n = .N ),
+        #     by = list("species_name", "bin_uri")
+        #   ] -> bin
+
+        if( length(uniqBins) > 1 ){
+
+          if( length(uniqSpps) > 1 ){
+
+            if(validate_name)
+              bin = renameWithValidate(bin)
 
             classFrame(
               m = matches,
-              g = ifelse(lengthIns > 1, 'A', 'B'),
+              g = ifelse(length(unique(bin$species_name)) == 1, 'C', 'E**'),
               b = bin,
-              y = x )
+              y = x)
 
           }else{
-            classFrame(m = matches, g = 'E*', b = bin, s = uniqSpps, y =  x)
+            classFrame(m = matches, g = 'C', b = bin, y = x)
+          }
+
+        }else{
+
+          if( length(uniqSpps) == 1 && lengthIns > 1){
+            classFrame(m = matches, g= 'A', b = bin, y = x )
+
+          }else if( length(uniqSpps) == 1 && lengthIns == 1 ){
+            classFrame(m = matches, g= 'B', b = bin, y = x )
+
+          }else{
+
+            if(validate_name)
+              bin = renameWithValidate(bin)
+
+            if( length(unique(bin$species_name)) == 1){
+
+              classFrame(
+                m = matches,
+                g = ifelse(lengthIns > 1, 'A', 'B'),
+                b = bin,
+                y = x )
+
+            }else{
+              classFrame(m = matches, g = 'E*', b = bin, s = uniqSpps, y =  x)
+            }
           }
         }
       }
@@ -356,11 +403,11 @@ AuditionBarcodes<- function(species,
 }
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1"){
-
-  globVars <- c(".", "processid", "bin_uri", "species_name",
-                "institution_storing", "species_taxID")
-
-  utils::globalVariables(globVars)
-}
+# if(getRversion() >= "2.15.1"){
+#
+#   globVars <- c(".", "processid", "bin_uri", "species_name",
+#                 "institution_storing", "species_taxID", ".N")
+#
+#   utils::globalVariables(globVars)
+# }
 

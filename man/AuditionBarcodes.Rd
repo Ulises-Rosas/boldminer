@@ -4,8 +4,8 @@
 \alias{AuditionBarcodes}
 \title{AuditionBarcodes}
 \usage{
-AuditionBarcodes(species, matches = NULL, validate_name = F,
-  include_ncbi = F, python_path = "/usr/local/bin/python3")
+AuditionBarcodes(species, matches = NULL, validate_name = FALSE,
+  include_ncbi = FALSE, python_path = "/usr/local/bin/python3")
 }
 \arguments{
 \item{species}{species}
@@ -34,4 +34,10 @@ Hence, since currently accepted names within `species` vector has not been
 figured out, unevenness between the column `BIN_structure` and `species` could pop up.
 For this reason, on above example, _Morula margariticola_ has another name into BIN structure
 column (i.e. _Drupella margariticola_) which actually is its currently accepted name.
+}
+\examples{
+\dontrun{
+species <- c( "Caranx ruber", "Bathygobius lineatus", "Diodon hystrix")
+boldminer::AuditionBarcodes(species, include_ncbi = FALSE, validate_name = TRUE)
+}
 }

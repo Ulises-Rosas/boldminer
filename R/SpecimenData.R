@@ -54,11 +54,16 @@ SpecimenData <- function(taxon, ids, bin, container, institutions, researchers, 
 
   text <- RCurl::getURL(URLtxt)
 
+  if(text == "")
+    return(NULL)
+
   if(list(...)[1] == "only")
     return(ape::read.FASTA(textConnection(text)))
 
-  if(text == "")
-    return(text)
+  df = data.table::fread(text, quote = "", stringsAsFactors = T)
 
-  data.table::fread(text,quote = "")
+  if( !nrow(df) )
+    return(NULL)
+
+  return(df)
 }
