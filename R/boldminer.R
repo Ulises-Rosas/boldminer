@@ -12,5 +12,8 @@ NULL
 ## The way global variables are defined for passing checkings was taken from here:
 ## https://github.com/jennybc/googlesheets/blob/master/R/googlesheets.R
 if (getRversion() >= "2.15.1") {
-  utils::globalVariables(names = c(".",".N",".SD"))
+  utils::globalVariables(names = c(".",".N",".SD",
+                                   "bin_uri", "institution_storing",
+                                   "processid", "species_name", "species_taxID"))
+
 }
