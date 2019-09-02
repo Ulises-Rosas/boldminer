@@ -4,8 +4,8 @@ BOLDmineR
 =========
 
 <!-- badges: start -->
-[![DOI](https://zenodo.org/badge/205451668.svg)](https://zenodo.org/badge/latestdoi/205451668)
-<!-- badges: end -->
+[![DOI](https://zenodo.org/badge/205451668.svg)](https://zenodo.org/badge/latestdoi/205451668) <!-- badges: end -->
+
 DNA barcodes are not only used by researchers, but also by decision-makers (e.g. to control food fraud or illegal species commercialization). The big-scale demand of both online services and information to identify species contrasts with the limited ways to automatize either species identification or assessment of barcode quality per species, directly from the web interface.
 
 [BOLD system](http://www.boldsystems.org/) is the main database of DNA barcode worldwide. This database has been stepply growing through time since its release ([Ratnasingham and Hebert 2007](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1471-8286.2007.01678.x)) and its accessibility is pivotal for projects focused on DNA barcodes. Nowdays APIs, to some extant, are offering access to well-know databases such as [FishBase](https://fishbase.ropensci.org/), [WoRMS](http://www.marinespecies.org/rest/) or [BOLD](http://www.boldsystems.org/index.php/api_home). Despite BOLD's API mostly involves only public data, this leverages its data retrieving for wider purposes. The API's applicability, however, seems to be wholly held up by its own needs of having either standalone softwares or functions which could wrap up blocks of information. The main objective of these functions (i.e. BOLD-mineR's functions) is justly circumscribe the BOLD's API performance with R-based scripts to get insights about DNA barcodes by using public information.
@@ -201,24 +201,15 @@ audit_out <- boldminer::AuditionBarcodes(species, exclude_ncbi = T, validate_nam
 
 ``` r
 audit_out
-#>                Species Grades                                                    Observations
-#> 1      Caretta caretta      A                            Matched BIN with external congruence
-#> 2 Bathygobius lineatus      B                       Matched BIN with internal congruence only
-#> 3      Albula esuncula      C                                                    Splitted BIN
-#> 4       Vibilia armata      D Insufficient data. Institution storing: 2. Specimen records: 20
-#> 5    Alepisaurus ferox    E**                                                    Mixtured BIN
-#> 6       Diodon hystrix     E*                                                      Merged BIN
-#> 7  Vesicomya galatheae      F                     Barcodes mined from GenBank or unvouchered.
-#> 8         Caranx ruber     NA                                      No specimen data available
-#>                                                                                                 BIN_structure
-#> 1                                                                       'BOLD:AAB8364':{'Caretta caretta':11}
-#> 2                                                                   'BOLD:AAF0181':{'Bathygobius lineatus':4}
-#> 3                                  'BOLD:AAF1162':{'Albula esuncula':3}, 'BOLD:AAA3538':{'Albula esuncula':1}
-#> 4                                                                                                        <NA>
-#> 5 'BOLD:AAC5235':{'Alepisaurus ferox':8}, 'BOLD:AAC5236':{'Alepisaurus brevirostris':3,'Alepisaurus ferox':3}
-#> 6                                                   'BOLD:AAB0446':{'Diodon hystrix':17,'Diodon eydouxii': 1}
-#> 7                                                                                                        <NA>
-#> 8                                                                                                        <NA>
+#>                Species Grades                                                    Observations                                                                                               BIN_structure
+#> 1      Caretta caretta      A                            Matched BIN with external congruence                                                                       'BOLD:AAB8364':{'Caretta caretta':11}
+#> 2 Bathygobius lineatus      B                       Matched BIN with internal congruence only                                                                   'BOLD:AAF0181':{'Bathygobius lineatus':4}
+#> 3      Albula esuncula      C                                                    Splitted BIN                                  'BOLD:AAF1162':{'Albula esuncula':3}, 'BOLD:AAA3538':{'Albula esuncula':1}
+#> 4       Vibilia armata      D Insufficient data. Institution storing: 2. Specimen records: 20                                                                                                        <NA>
+#> 5    Alepisaurus ferox    E**                                                    Mixtured BIN 'BOLD:AAC5235':{'Alepisaurus ferox':8}, 'BOLD:AAC5236':{'Alepisaurus brevirostris':3,'Alepisaurus ferox':3}
+#> 6       Diodon hystrix     E*                                                      Merged BIN                                                   'BOLD:AAB0446':{'Diodon hystrix':17,'Diodon eydouxii': 1}
+#> 7  Vesicomya galatheae      F                     Barcodes mined from GenBank or unvouchered.                                                                                                        <NA>
+#> 8         Caranx ruber     NA                                      No specimen data available                                                                                                        <NA>
 ```
 
 Please notice that grades are obtained with accepted names of species according to [WoRMS database](http://www.marinespecies.org/) Rest service by using its taxamatch algorithm. Hence, since currently accepted names within `species` vector has not been figured out, unevenness between the column `BIN_structure` and `species` could pop up.
