@@ -2,11 +2,11 @@
 #'
 #'
 #' This function adds an audition step
-#' (\href{Oliveira et al 2016}{doi: 10.1111/jfb.13169})
+#' (\href{doi: 10.1111/jfb.13169}{Oliveira et al 2016})
 #' to each selected specimen by \code{\link{ID_engine}}, given a certain threshold.
 #' This function, in turn, uses another function called \code{\link{AuditionBarcodes}}.
 #' This prior function is coupled with addAudition and can validate species names by
-#' taking accepted names from \href{Worms database}{http://www.marinespecies.org/index.php}.
+#' taking accepted names from \href{http://www.marinespecies.org/index.php}{Worms database}.
 #'
 #'
 #' @param seqs sequence file
