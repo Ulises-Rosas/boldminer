@@ -14,7 +14,7 @@
 #' @param query query
 #' @param db db
 #' @param make_blast make_blast
-#' @param ... amazing three points
+#' @param quiet if TRUE, suppress running messages while running
 #'
 #' @return species ID
 #' @importFrom magrittr %>%
@@ -28,7 +28,7 @@
 #'
 #' }
 #'
-ID_engine <- function(query, db, make_blast = TRUE, ...){
+ID_engine <- function(query, db, make_blast = TRUE, quiet = FALSE){
 
   # db    = "COX1_SPECIES"
   # query = fasta_file
@@ -45,8 +45,16 @@ ID_engine <- function(query, db, make_blast = TRUE, ...){
       }
     ) -> seqs
 
+  if(!quiet){
+    writeLines( "Species ID in:\n" )
+    fmt <- getfmt(names(seqs))
+  }
+
   # seqs = seqs[1]
   lapply(names(seqs), function(y){
+
+    if(!quiet)
+      writeLines(sprintf(fmt, y))
 
     x = seqs[[y]]
 

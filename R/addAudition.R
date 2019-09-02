@@ -47,7 +47,7 @@ auditOnID <- function(seqs,
 
   for( i in 1:length(seqs) ){
     # i = 1
-    tmp = ID_engine(seqs[i], db = "COX1_SPECIES", make_blast)
+    tmp = ID_engine(seqs[i], db = "COX1_SPECIES", make_blast, quiet = TRUE)
 
     if( grepl("Unavailable", tmp[[1]]$taxonomicidentification[1]) ){
 

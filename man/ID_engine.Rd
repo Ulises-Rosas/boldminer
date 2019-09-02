@@ -4,7 +4,7 @@
 \alias{ID_engine}
 \title{ID_engine}
 \usage{
-ID_engine(query, db, make_blast = TRUE, ...)
+ID_engine(query, db, make_blast = TRUE, quiet = FALSE)
 }
 \arguments{
 \item{query}{query}
@@ -13,7 +13,7 @@ ID_engine(query, db, make_blast = TRUE, ...)
 
 \item{make_blast}{make_blast}
 
-\item{...}{amazing three points}
+\item{quiet}{if TRUE, suppress running messages while running}
 }
 \value{
 species ID
