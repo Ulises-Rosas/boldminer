@@ -36,6 +36,6 @@ for downloading metadata. More than one query
 can be specified by using "|".
 }
 \examples{
-specimendata <- SpecimenData(taxon = "Elasmobranchii", geo = "Peru")
+specimendata <- boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru")
 head(specimendata)
 }

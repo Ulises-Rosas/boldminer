@@ -55,12 +55,18 @@ If we want to get information, for instance, from all specimens of elasmobranchs
 specimendata <- boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru")
 ```
 
-Then, we use _tibble_ package to only assess its dimension:
+Then,we use _tibble_ package for just assessing `specimendata` dimension:
+
 ```{r}
 tibble::as_tibble(specimendata)
 ```
 
-However, if only sequences are desired, the argument `seq = "only"` should be stated. You can also combine metadata with sequences by using `seq = "combined"`
+Given its dimension, we can summarize our `specimendata` data frame with the `sumSData()` utility:
+```{r}
+boldminer::sumSData(df = specimendata, cols = c("species_name", "country"))
+```
+Where `n` column shows up unique counts after grouping data frame by values from `cols` argument. 
+If only sequences are desired from `SpecimenData()` function, the argument `seq = "only"` should be stated. You can also combine metadata with sequences by using `seq = "combined"`
 
 ```{r}
 boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru", seq = "only")

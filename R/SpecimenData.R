@@ -20,7 +20,7 @@
 #' @export
 #'
 #' @examples
-#' specimendata <- SpecimenData(taxon = "Elasmobranchii", geo = "Peru")
+#' specimendata <- boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru")
 #' head(specimendata)
 
 
@@ -66,4 +66,48 @@ SpecimenData <- function(taxon, ids, bin, container, institutions, researchers, 
     return(NULL)
 
   return(df)
+}
+
+#' sumSData
+#'
+#' short utility to summarize data frame
+#'
+#' @param df specimen data from \code{\link{SpecimenData}} function
+#' @param columns columns to summarize on
+#'
+#' @return summarized data frame
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' specimendata <- boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru")
+#' boldminer::sumSData(df = specimendata, cols = c("species_name", "country"))
+#' }
+sumSData <- function(df, cols){
+  # cols = c("species_name","country", "bin_uril" )
+  # df = specimendata
+
+  colEval = cols[cols %in% colnames(df)]
+
+  if( !length(colEval) ){
+
+    warning("Any input column found in specimen data")
+    return(NULL)
+
+  }else if( length(colEval) != length(cols) ){
+
+    msg    = "Following input column not found in specimen data: "
+    notCol = cols[!cols %in% colEval]
+
+    warning( paste0(msg, paste(notCol, collapse = ", ")) )
+  }
+
+  df[,
+     j = list(n = .N),
+     by = colEval
+     ][
+       i = order(-n),
+       ] -> out
+
+  return(out)
 }

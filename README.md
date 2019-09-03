@@ -45,7 +45,7 @@ If we want to get information, for instance, from all specimens of elasmobranchs
 specimendata <- boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru")
 ```
 
-Then, we use *tibble* package to only assess its dimension:
+Then,we use *tibble* package for just assessing `specimendata` dimension:
 
 ``` r
 tibble::as_tibble(specimendata)
@@ -86,7 +86,28 @@ tibble::as_tibble(specimendata)
 #> #   photographers <lgl>
 ```
 
-However, if only sequences are desired, the argument `seq = "only"` should be stated. You can also combine metadata with sequences by using `seq = "combined"`
+Given its dimension, we can summarize our `specimendata` data frame with the `sumSData()` utility:
+
+``` r
+boldminer::sumSData(df = specimendata, cols = c("species_name", "country"))
+#>                species_name country  n
+#>  1:                            Peru 58
+#>  2:       Isurus oxyrinchus    Peru 14
+#>  3:         Prionace glauca    Peru  9
+#>  4:       Alopias pelagicus    Peru  5
+#>  5:             Lamna nasus    Peru  3
+#>  6:      Galeorhinus galeus    Peru  2
+#>  7:   Carcharhinus obscurus    Peru  1
+#>  8:         Sphyrna zygaena    Peru  1
+#>  9: Carcharhinus brachyurus    Peru  1
+#> 10:          Aculeola nigra    Peru  1
+#> 11:   Potamotrygon falkneri    Peru  1
+#> 12:      Potamotrygon sp. a    Peru  1
+#> 13:        Potamotrygon sp.    Peru  1
+#> 14:     Urotrygon chilensis    Peru  1
+```
+
+Where `n` column shows up unique counts after grouping data frame by values from `cols` argument. If only sequences are desired from `SpecimenData()` function, the argument `seq = "only"` should be stated. You can also combine metadata with sequences by using `seq = "combined"`
 
 ``` r
 boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru", seq = "only")
