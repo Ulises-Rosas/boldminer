@@ -110,7 +110,8 @@ boldminer::sumSData(df = specimendata, cols = c("species_name", "country"))
 Where `n` column shows up unique counts after grouping data frame by values from `cols` argument. If only sequences are desired from `SpecimenData()` function, the argument `seq = "only"` should be stated. You can also combine metadata with sequences by using `seq = "combined"`
 
 ``` r
-boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru", seq = "only")
+seqs <- boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru", seq = "only")
+seqs
 #> 99 DNA sequences in binary format stored in a list.
 #> 
 #> Mean sequence length: 641.899 
@@ -130,6 +131,13 @@ boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru", seq = "only")
 #>     a     c     g     t 
 #> 0.258 0.254 0.166 0.323 
 #> (Total: 63.55 kb)
+```
+
+Above sequences can be also exported into a file by using `write.dna()` function from the *ape* package, which, in turn, the *boldminer* package depends:
+
+``` r
+# library(ape)
+ape::write.dna(x = seqs, file = 'sequences.txt', format = 'fasta', nbcol = 1, colw = 90)
 ```
 
 ### ID\_engine

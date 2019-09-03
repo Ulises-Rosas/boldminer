@@ -69,7 +69,15 @@ Where `n` column shows up unique counts after grouping data frame by values from
 If only sequences are desired from `SpecimenData()` function, the argument `seq = "only"` should be stated. You can also combine metadata with sequences by using `seq = "combined"`
 
 ```{r}
-boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru", seq = "only")
+seqs <- boldminer::SpecimenData(taxon = "Elasmobranchii", geo = "Peru", seq = "only")
+seqs
+```
+
+Above sequences can be also exported into a file by using `write.dna()` function from the _ape_ package, which, in turn, the _boldminer_ package depends:
+
+```{r eval=FALSE}
+# library(ape)
+ape::write.dna(x = seqs, file = 'sequences.txt', format = 'fasta', nbcol = 1, colw = 90)
 ```
 
 ### ID_engine
