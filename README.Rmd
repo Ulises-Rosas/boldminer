@@ -1,5 +1,6 @@
 ---
 output: github_document
+always_allow_html: yes
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -65,6 +66,15 @@ Given its dimension, we can summarize our `specimendata` data frame with the `su
 ```{r}
 boldminer::sumSData(df = specimendata, cols = c("species_name", "country"))
 ```
+
+You can also plot geographical information, when available, by using `leafletPlot()`:
+
+```{r eval=FALSE}
+boldminer::leafletPlot(specimendata)
+```
+
+![](man/figures/Rplot02.png)
+
 Where `n` column shows up unique counts after grouping data frame by values from `cols` argument. 
 If only sequences are desired from `SpecimenData()` function, the argument `seq = "only"` should be stated. You can also combine metadata with sequences by using `seq = "combined"`
 

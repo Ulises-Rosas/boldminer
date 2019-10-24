@@ -54,14 +54,14 @@ tibble::as_tibble(specimendata)
 #>    <fct>     <fct>       <int> <fct>      <fct>    <fct>           
 #>  1 ANGBF109… KJ146022  5651960 ""         KJ146022 Mined from GenB…
 #>  2 ANGBF109… KJ146023  5651961 ""         KJ146023 Mined from GenB…
-#>  3 ANGBF109… KJ146024  5651962 ""         KJ146024 Mined from GenB…
+#>  3 ANGBF110… KJ146027  5652062 ""         KJ146027 Mined from GenB…
 #>  4 ANGBF110… KJ146021  5652090 ""         KJ146021 Mined from GenB…
 #>  5 ANGBF110… KJ146044  5652111 ""         KJ146044 Mined from GenB…
 #>  6 ANGBF110… KJ146043  5652112 ""         KJ146043 Mined from GenB…
 #>  7 ANGBF116… KJ146045  5652680 ""         KJ146045 Mined from GenB…
 #>  8 ANGBF116… KJ146041  5652681 ""         KJ146041 Mined from GenB…
 #>  9 ANGBF116… KJ146040  5652682 ""         KJ146040 Mined from GenB…
-#> 10 ANGBF116… KJ146038  5652684 ""         KJ146038 Mined from GenB…
+#> 10 ANGBF116… KJ146039  5652683 ""         KJ146039 Mined from GenB…
 #> # … with 89 more rows, and 62 more variables: collection_code <lgl>,
 #> #   bin_uri <fct>, phylum_taxID <int>, phylum_name <fct>,
 #> #   class_taxID <int>, class_name <fct>, order_taxID <int>,
@@ -97,15 +97,23 @@ boldminer::sumSData(df = specimendata, cols = c("species_name", "country"))
 #>  4:       Alopias pelagicus    Peru  5
 #>  5:             Lamna nasus    Peru  3
 #>  6:      Galeorhinus galeus    Peru  2
-#>  7:   Carcharhinus obscurus    Peru  1
-#>  8:         Sphyrna zygaena    Peru  1
-#>  9: Carcharhinus brachyurus    Peru  1
+#>  7: Carcharhinus brachyurus    Peru  1
+#>  8:   Carcharhinus obscurus    Peru  1
+#>  9:         Sphyrna zygaena    Peru  1
 #> 10:          Aculeola nigra    Peru  1
 #> 11:   Potamotrygon falkneri    Peru  1
 #> 12:      Potamotrygon sp. a    Peru  1
 #> 13:        Potamotrygon sp.    Peru  1
 #> 14:     Urotrygon chilensis    Peru  1
 ```
+
+You can also plot geographical information, when available, by using `leafletPlot()`:
+
+``` r
+boldminer::leafletPlot(specimendata)
+```
+
+![](man/figures/Rplot02.png)
 
 Where `n` column shows up unique counts after grouping data frame by values from `cols` argument. If only sequences are desired from `SpecimenData()` function, the argument `seq = "only"` should be stated. You can also combine metadata with sequences by using `seq = "combined"`
 
@@ -121,7 +129,7 @@ seqs
 #> Labels:
 #> ANGBF10913-15|Alopias pelagicus|COI-5P|KJ146022
 #> ANGBF10914-15|Alopias pelagicus|COI-5P|KJ146023
-#> ANGBF10915-15|Alopias pelagicus|COI-5P|KJ146024
+#> ANGBF11015-15|Carcharhinus brachyurus|COI-5P|KJ146027
 #> ANGBF11043-15|Carcharhinus obscurus|COI-5P|KJ146021
 #> ANGBF11064-15|Prionace glauca|COI-5P|KJ146044
 #> ANGBF11065-15|Prionace glauca|COI-5P|KJ146043
