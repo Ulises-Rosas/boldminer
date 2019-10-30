@@ -36,11 +36,9 @@ auditOnID <- function(seqs,
                       validate_name = FALSE
                       ){
   ## delete test
-  # seqs = ape::read.FASTA("6thBatch.TXT")[3]
+  # seqs = ape::read.FASTA("6thBatch.TXT")[56]
   # just_ID = T
   ##
-
-
   pat = "^[A-Z][a-z]+ [a-z]+$"
   pat2 = "^[A-Z][a-z]+ sp[p|\\.]{0,2}$"
 
@@ -118,7 +116,7 @@ auditOnID <- function(seqs,
 
       }else{
 
-        tmp = tmp[ tmp$similarity > threshold ]
+        tmp = tmp[ tmp$similarity >= threshold ]
 
         barcodes = sort( table(tmp$taxonomicidentification), decreasing = T)
 
