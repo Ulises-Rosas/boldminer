@@ -35,6 +35,11 @@ auditOnID <- function(seqs,
                       make_blast = FALSE ,
                       validate_name = FALSE
                       ){
+  ## delete test
+  # seqs = ape::read.FASTA("6thBatch.TXT")[3]
+  # just_ID = T
+  ##
+
 
   pat = "^[A-Z][a-z]+ [a-z]+$"
   pat2 = "^[A-Z][a-z]+ sp[p|\\.]{0,2}$"
@@ -46,7 +51,9 @@ auditOnID <- function(seqs,
   pb <- txtProgressBar(min = 0, max = length(seqs), style = 3, char = "*")
 
   for( i in 1:length(seqs) ){
+    ## delete
     # i = 1
+    ##
     tmp = ID_engine(seqs[i], db = "COX1_SPECIES", make_blast, quiet = TRUE)
 
     if( grepl("Unavailable", tmp[[1]]$taxonomicidentification[1]) ){
@@ -68,12 +75,15 @@ auditOnID <- function(seqs,
 
     tmpf = data.table::as.data.table(tmp[[1]])
 
-    tmpf[i = grepl(pat, tmpf$taxonomicidentification) & !grepl(pat2, tmpf$taxonomicidentification),
-         j = list(
-           ID,
-           taxonomicidentification,
-           similarity = as.numeric(tmpf$similarity))
-         ] -> tmp
+    tmpf[
+      i = grepl(pat, tmpf$taxonomicidentification) & !grepl(pat2, tmpf$taxonomicidentification)
+      ][,
+        j = list(
+          ID,
+          taxonomicidentification,
+          similarity = as.numeric(similarity)
+          )
+        ] -> tmp
 
     if( tmp[1,]$similarity < threshold ){
 
