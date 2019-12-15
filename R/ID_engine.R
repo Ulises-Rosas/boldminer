@@ -30,8 +30,6 @@
 #'
 ID_engine <- function(query, db, make_blast = TRUE, quiet = FALSE){
 
-  # db    = "COX1_SPECIES"
-  # query = fasta_file
 
   if( !length( attributes(query) ) )
     query = ape::read.FASTA(query)
@@ -51,88 +49,89 @@ ID_engine <- function(query, db, make_blast = TRUE, quiet = FALSE){
   }
 
   # seqs = seqs[1]
-  lapply(names(seqs), function(y){
+  lapply(
+    names(seqs),
+    function(y){
 
-    if(!quiet)
-      writeLines(sprintf(fmt, y))
+      if(!quiet)
+        writeLines(sprintf(fmt, y))
 
-    x = seqs[[y]]
+      x = seqs[[y]]
 
-    data <- XML::xmlParse(
-      paste0("http://www.boldsystems.org/index.php/Ids_xml?db=",
-             db,"&sequence=", x))
+      bold.results = getIDfromBOLD(seq = x, db = db)
 
-    bold.results = XML::xmlToDataFrame(data, stringsAsFactors = FALSE)
+      if( nrow(bold.results) == 0 && make_blast ){
 
-    if( nrow(bold.results) == 0 && make_blast ){
+        rid <- RCurl::getURL(
+          paste("https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Put&PROGRAM=blastn&MEGABLAST=on&DATABASE=nt&QUERY=",
+                x,"&WORD_SIZE=28&HITLIST_SIZE=3", sep = ""))  %>%
+          gsub(".*\"RID\" value=\"", "", x =.) %>%
+          gsub("\".*","", x =.)
 
-      rid <- RCurl::getURL(
-        paste("https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Put&PROGRAM=blastn&MEGABLAST=on&DATABASE=nt&QUERY=",
-              x,"&WORD_SIZE=28&HITLIST_SIZE=3", sep = ""))  %>%
-        gsub(".*\"RID\" value=\"", "", x =.) %>%
-        gsub("\".*","", x =.)
+        if(rid == "")
+          return(
+            data.frame(ID = "GenBank: RID not available",
+                       taxonomicidentification = "RID not available.",
+                       similarity = 0,
+                       stringsAsFactors = FALSE)
+            )
 
-      if(rid == "")
+        hits = list()
+
+        while( all(is.na(hits)) ){
+
+          tmp.output = RCurl::getURL(
+            paste("https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Get&FORMAT_TYPE=XML&RID=",
+                  rid, sep = "")) %>%
+            strsplit(x = ., split = "<Hit>\n")
+          hits = tmp.output[[1]][2:4]
+          Sys.sleep(5)
+        }
+
+        lapply(hits,
+               function(e){
+                 data.frame(
+
+                   ID = gsub(".*<Hit_id>", "", e) %>%
+                     gsub("</Hit_id>\n.*", "", x =.) %>%
+                     gsub("\\|", "", x =.) %>%
+                     strsplit(x =., split = "gb") %>%
+                     tail(x =.[[1]], n = 1) %>%
+                     paste("GenBank: ", . ,sep = ""),
+
+                   taxonomicidentification = gsub(".*<Hit_def>", "", e) %>%
+                     gsub("</Hit_def>.*", "", x =.) %>%
+                     strsplit(x =. , split = " ") %>%
+                     head(x =.[[1]], n = 2) %>%
+                     paste(., collapse = " "),
+
+                   similarity = round(
+                     gsub(".*<Hsp_identity>", "", e) %>%
+                       gsub("</Hsp_identity>.*", "", x =.) %>%
+                       as.numeric(.) / gsub(".*<Hsp_align-len>", "", e) %>%
+                       gsub("</Hsp_align-len>.*", "", x =.) %>%
+                       as.numeric(.) ,
+                     digits = 4),
+
+                   stringsAsFactors = FALSE
+                   )
+                 }) -> genbank.results
+
+        return(do.call("rbind", genbank.results))
+
+      }else if( nrow(bold.results) == 0 && !make_blast ){
+
         return(
-          data.frame(ID = "GenBank: RID not available",
-                     taxonomicidentification = "RID not available.",
+          data.frame(ID = y,
+                     taxonomicidentification = "Unavailable with BOLD",
                      similarity = 0,
                      stringsAsFactors = FALSE)
           )
 
-      hits = list()
+      }else{
 
-      while( all(is.na(hits)) ){
-
-        tmp.output = RCurl::getURL(
-          paste("https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Get&FORMAT_TYPE=XML&RID=",
-                rid, sep = "")) %>%
-          strsplit(x = ., split = "<Hit>\n")
-        hits = tmp.output[[1]][2:4]
-        Sys.sleep(5)
+        return(bold.results)
       }
-
-      genbank.results = lapply(hits, function(e){
-
-        data.frame( ID = gsub(".*<Hit_id>", "", e) %>%
-                      gsub("</Hit_id>\n.*", "", x =.) %>%
-                      gsub("\\|", "", x =.) %>%
-                      strsplit(x =., split = "gb") %>%
-                      tail(x =.[[1]], n = 1) %>%
-                      paste("GenBank: ", . ,sep = ""),
-
-                    taxonomicidentification = gsub(".*<Hit_def>", "", e) %>%
-                      gsub("</Hit_def>.*", "", x =.) %>%
-                      strsplit(x =. , split = " ") %>%
-                      head(x =.[[1]], n = 2) %>%
-                      paste(., collapse = " "),
-
-                    similarity = round(
-                      gsub(".*<Hsp_identity>", "", e) %>%
-                        gsub("</Hsp_identity>.*", "", x =.) %>%
-                        as.numeric(.) / gsub(".*<Hsp_align-len>", "", e) %>%
-                        gsub("</Hsp_align-len>.*", "", x =.) %>%
-                        as.numeric(.) ,
-                      digits = 4),
-
-                    stringsAsFactors = FALSE
-                    )
-        })
-
-      return(do.call("rbind", genbank.results))
-
-    }else if(  nrow(bold.results) == 0 && !make_blast ){
-      return(
-        data.frame(ID = y,
-                   taxonomicidentification = "Unavailable with BOLD",
-                   similarity = 0,
-                   stringsAsFactors = FALSE)
-        )
-
-    }else{
-
-      return(bold.results)
-    }
   }) -> ids
 
   names(ids) <- names(seqs)
