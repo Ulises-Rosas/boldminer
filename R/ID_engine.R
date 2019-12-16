@@ -57,6 +57,7 @@ ID_engine <- function(query, db, make_blast = TRUE, quiet = FALSE){
         writeLines(sprintf(fmt, y))
 
       x = seqs[[y]]
+      seqLength = nchar(x)
 
       bold.results = getIDfromBOLD(seq = x, db = db)
 
@@ -113,22 +114,29 @@ ID_engine <- function(query, db, make_blast = TRUE, quiet = FALSE){
                        as.numeric(.) ,
                      digits = 4),
 
+                   sequence_length = seqLength,
+
                    stringsAsFactors = FALSE
                    )
                  }) -> genbank.results
 
         return(do.call("rbind", genbank.results))
 
-      }else if( nrow(bold.results) == 0 && !make_blast ){
+      }
+      else if( nrow(bold.results) == 0 && !make_blast ){
 
         return(
           data.frame(ID = y,
                      taxonomicidentification = "Unavailable with BOLD",
                      similarity = 0,
+                     sequence_length = seqLength,
                      stringsAsFactors = FALSE)
           )
 
-      }else{
+      }
+      else{
+
+        bold.results$sequence_length <- seqLength
 
         return(bold.results)
       }
@@ -164,8 +172,8 @@ lookID <- function(out, first = 5, last = 0){
 
       tmpdf = out[[x]]
 
-      if(ncol(tmpdf) > 3)
-        tmpdf <- tmpdf[, c(1,5,6)]
+      if(ncol(tmpdf) > 4)
+        tmpdf <- tmpdf[, c(8,1,5,6)]
 
       df = data.frame()
 
@@ -184,8 +192,7 @@ lookID <- function(out, first = 5, last = 0){
 
         return(NULL)
       }
-    }
-  ) -> fmtDf
+    }) -> fmtDf
 
   return( do.call("rbind", fmtDf) )
 }

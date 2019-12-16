@@ -36,7 +36,7 @@ auditOnID <- function(seqs,
                       validate_name = FALSE
                       ){
   ## delete test
-  # seqs = ape::read.FASTA("6thBatch.TXT")[56]
+  # seqs = ape::read.FASTA("~/Desktop/cleaning seqs/8th/batch_8th.txt")[56]
   # just_ID = T
   ##
   pat = "^[A-Z][a-z]+ [a-z]+$"
@@ -52,26 +52,34 @@ auditOnID <- function(seqs,
     ## delete
     # i = 1
     ##
-    tmp = ID_engine(seqs[i], db = "COX1_SPECIES", make_blast, quiet = TRUE)
+    tmp = ID_engine(seqs[i], db = "COX1_SPECIES", make_blast, quiet = TRUE)[[1]]
+    SL  = tmp$sequence_length[1]
 
-    if( grepl("Unavailable", tmp[[1]]$taxonomicidentification[1]) ){
+    if( grepl("Unavailable", tmp$taxonomicidentification[1]) ){
 
       if(!just_ID){
-        data.frame(Match   = "Any",
-                   Species = "",
-                   Grades  = "",
-                   Observations = tmp[[1]]$taxonomicidentification,
-                   stringsAsFactors = FALSE ) -> lista2[[i]]
+        data.frame(
+          Sequence_Length = SL,
+          Match   = "Any",
+          Species = "",
+          Grades  = "",
+          Observations     = tmp$taxonomicidentification,
+          stringsAsFactors = FALSE
+        ) -> lista2[[i]]
+
       }else{
-        data.frame(Match   = "Any",
-                   Species = tmp[[1]]$taxonomicidentification,
-                   stringsAsFactors = FALSE ) -> lista2[[i]]
+        data.frame(
+          Sequence_Length = SL,
+          Match   = "Any",
+          Species = tmp$taxonomicidentification,
+          stringsAsFactors = FALSE
+        ) -> lista2[[i]]
       }
       setTxtProgressBar(pb, i)
       next
     }
 
-    tmpf = data.table::as.data.table(tmp[[1]])
+    tmpf = data.table::as.data.table(tmp)
 
     tmpf[
       i = grepl(pat, tmpf$taxonomicidentification) & !grepl(pat2, tmpf$taxonomicidentification)
@@ -96,28 +104,30 @@ auditOnID <- function(seqs,
 
       if(!just_ID){
 
-        if(grepl("RID", tmp[1,]$ID)){
-          paste("RID not available.") -> obs
+        obs <- if( grepl("RID", tmp[1,]$ID) ) "RID not available." else best_matches
 
-        }else{
-          best_matches -> obs
-        }
-
-        data.frame(Match   = "Any",
-                   Species = "",
-                   Grades  = "",
-                   Observations = obs,
-                   stringsAsFactors = FALSE ) -> lista2[[i]]
-      }else{
-        data.frame(Match = "Any",
-                   Species = best_matches,
-                   stringsAsFactors = FALSE) -> lista2[[i]]
-        }
+        data.frame(
+          Sequence_Length = SL,
+          Match   = "Any",
+          Species = "",
+          Grades  = "",
+          Observations = obs,
+          stringsAsFactors = FALSE
+          ) -> lista2[[i]]
 
       }else{
 
-        tmp = tmp[ tmp$similarity >= threshold ]
+        data.frame(
+          Sequence_Length = SL,
+          Match = "Any",
+          Species = best_matches,
+          stringsAsFactors = FALSE
+          ) -> lista2[[i]]
+        }
 
+      }else{
+
+        tmp      = tmp[ tmp$similarity >= threshold ]
         barcodes = sort( table(tmp$taxonomicidentification), decreasing = T)
 
         if(length(barcodes) > 1){
@@ -130,43 +140,58 @@ auditOnID <- function(seqs,
 
           if(!just_ID){
 
-            data.frame(Match   = "Ambiguous",
-                       Species = paste(vec, collapse = ", "),
-                       Grades  = paste(
-                         paste(
-                           AuditionBarcodes(species = names(barcodes),
-                                            matches = sum(barcodes),
-                                            exclude_ncbi  = exclude_ncbi,
-                                            validate_name = validate_name,
-                                            quiet = TRUE)$Grades,
-                           collapse = ", "),
-                         " respectively.",sep = ""),
-                       Observations = "",
-                       stringsAsFactors = FALSE) -> lista2[[i]]
+            data.frame(
+              Sequence_Length = SL,
+              Match   = "Ambiguous",
+              Species = paste(vec, collapse = ", "),
+              Grades  = paste(
+                paste(
+                  AuditionBarcodes(species = names(barcodes),
+                                   matches = sum(barcodes),
+                                   exclude_ncbi  = exclude_ncbi,
+                                   validate_name = validate_name,
+                                   quiet = TRUE)$Grades,
+                  collapse = ", "),
+                " respectively.", sep = ""),
+              Observations = "",
+              stringsAsFactors = FALSE
+              ) -> lista2[[i]]
+
           }else{
 
-              data.frame(
-                Match = "Ambiguous",
-                Species = paste(vec, collapse = ", "),
-                stringsAsFactors = FALSE ) -> lista2[[i]]
-            }
+            data.frame(
+              Sequence_Length = SL,
+              Match = "Ambiguous",
+              Species = paste(vec, collapse = ", "),
+              stringsAsFactors = FALSE
+            ) -> lista2[[i]]
+
+          }
 
           }else{
 
             if(!just_ID){
 
-              data.frame(Match = "Unique",
-                         Species = paste(names(barcodes)),
-                         AuditionBarcodes(species = names(barcodes),
-                                          matches = sum(barcodes),
-                                          exclude_ncbi  = exclude_ncbi,
-                                          validate_name = validate_name,
-                                          quiet = TRUE),
-                         stringsAsFactors = FALSE) -> lista2[[i]]
+              data.frame(
+                Sequence_Length = SL,
+                Match = "Unique",
+                Species = paste(names(barcodes)),
+                AuditionBarcodes(species = names(barcodes),
+                                 matches = sum(barcodes),
+                                 exclude_ncbi  = exclude_ncbi,
+                                 validate_name = validate_name,
+                                 quiet = TRUE),
+                stringsAsFactors = FALSE
+                ) -> lista2[[i]]
+
               }else{
-                data.frame(Match   = "Unique",
-                           Species = paste(names(barcodes)),
-                           stringsAsFactors = FALSE) -> lista2[[i]]
+
+                data.frame(
+                  Sequence_Length = SL,
+                  Match   = "Unique",
+                  Species = paste(names(barcodes)),
+                  stringsAsFactors = FALSE
+                  ) -> lista2[[i]]
               }
           }
         setTxtProgressBar(pb, i)
