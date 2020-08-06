@@ -147,7 +147,7 @@ def writeout(file, out, threshold):
         f.writelines(out)
 
     # filtered table
-    myfilterdfile = "filtered_" + file
+    myfilterdfile = file + "_filtered"
     myfilterdvals = filterbythreshold(out, threshold)
 
     if myfilterdvals:

@@ -8,7 +8,7 @@ with open('README.md') as readme_file:
 
 
 setup(name="boldminer",
-      version='0.2',
+      version='0.3',
       long_description = readme,
       long_description_content_type='text/markdown',
       author='Ulises Rosas',
